@@ -1,0 +1,13 @@
+Package: CytofkitNormalization
+Type: Package
+Title: CytofkitNormalization
+Version: 1.0.1
+Date: 2022-12-05
+Author: Paul Shannon
+Maintainer: Paul Shannon<paul.thurmond.shannon@gmail.com>
+Imports:
+Description: linear regression normalization utilities
+Depends: R (>= 4.1.0), R6
+License: MIT
+Encoding: UTF-8
+RoxygenNote: 7.2.1
