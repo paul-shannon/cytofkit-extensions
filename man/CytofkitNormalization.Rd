@@ -30,6 +30,9 @@ A template for building documented, tested R6 classes
 \item \href{#method-CytofkitNormalization-getMatrix}{\code{CytofkitNormalization$getMatrix()}}
 \item \href{#method-CytofkitNormalization-getTsne}{\code{CytofkitNormalization$getTsne()}}
 \item \href{#method-CytofkitNormalization-getClusters}{\code{CytofkitNormalization$getClusters()}}
+\item \href{#method-CytofkitNormalization-createSimpleMarkerNames}{\code{CytofkitNormalization$createSimpleMarkerNames()}}
+\item \href{#method-CytofkitNormalization-getMarkers}{\code{CytofkitNormalization$getMarkers()}}
+\item \href{#method-CytofkitNormalization-normalizeMarker}{\code{CytofkitNormalization$normalizeMarker()}}
 \item \href{#method-CytofkitNormalization-clone}{\code{CytofkitNormalization$clone()}}
 }
 }
@@ -90,6 +93,55 @@ accessor for the object's cluster list
 
 \subsection{Returns}{
 the matrix
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-CytofkitNormalization-createSimpleMarkerNames"></a>}}
+\if{latex}{\out{\hypertarget{method-CytofkitNormalization-createSimpleMarkerNames}{}}}
+\subsection{Method \code{createSimpleMarkerNames()}}{
+accessor for markers used in the cytof
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{CytofkitNormalization$createSimpleMarkerNames()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+nothing
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-CytofkitNormalization-getMarkers"></a>}}
+\if{latex}{\out{\hypertarget{method-CytofkitNormalization-getMarkers}{}}}
+\subsection{Method \code{getMarkers()}}{
+accessor for named list, e.g. list("H3"="Yb176Di<176Yb_H3>")
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{CytofkitNormalization$getMarkers()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+character list
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-CytofkitNormalization-normalizeMarker"></a>}}
+\if{latex}{\out{\hypertarget{method-CytofkitNormalization-normalizeMarker}{}}}
+\subsection{Method \code{normalizeMarker()}}{
+calculate and append a normalized vector column for the specified
+  histone marker, regressed against the base ("total") H3 and/or H4 vector
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{CytofkitNormalization$normalizeMarker(target.marker, reference.markers)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{target.marker}}{character, a column name from the matrix, e.g., "Sm154Di<154Sm_H3K27me2>"}
+
+\item{\code{reference.markers}}{character, the marker names for reference ("total") H3 and/or H4}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+character the newly created column name
 }
 }
 \if{html}{\out{<hr>}}
