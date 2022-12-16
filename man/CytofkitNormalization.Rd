@@ -32,7 +32,9 @@ A template for building documented, tested R6 classes
 \item \href{#method-CytofkitNormalization-getClusters}{\code{CytofkitNormalization$getClusters()}}
 \item \href{#method-CytofkitNormalization-createSimpleMarkerNames}{\code{CytofkitNormalization$createSimpleMarkerNames()}}
 \item \href{#method-CytofkitNormalization-getMarkers}{\code{CytofkitNormalization$getMarkers()}}
+\item \href{#method-CytofkitNormalization-getCluster}{\code{CytofkitNormalization$getCluster()}}
 \item \href{#method-CytofkitNormalization-normalizeMarker}{\code{CytofkitNormalization$normalizeMarker()}}
+\item \href{#method-CytofkitNormalization-createTableForViolinPlot}{\code{CytofkitNormalization$createTableForViolinPlot()}}
 \item \href{#method-CytofkitNormalization-clone}{\code{CytofkitNormalization$clone()}}
 }
 }
@@ -122,6 +124,26 @@ character list
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-CytofkitNormalization-getCluster"></a>}}
+\if{latex}{\out{\hypertarget{method-CytofkitNormalization-getCluster}{}}}
+\subsection{Method \code{getCluster()}}{
+accessor for named list, e.g. list("H3"="Yb176Di<176Yb_H3>")
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{CytofkitNormalization$getCluster(clusterNumber)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{clusterNumber}}{numeric - must be in range}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+character list
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-CytofkitNormalization-normalizeMarker"></a>}}
 \if{latex}{\out{\hypertarget{method-CytofkitNormalization-normalizeMarker}{}}}
 \subsection{Method \code{normalizeMarker()}}{
@@ -142,6 +164,28 @@ calculate and append a normalized vector column for the specified
 }
 \subsection{Returns}{
 character the newly created column name
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-CytofkitNormalization-createTableForViolinPlot"></a>}}
+\if{latex}{\out{\hypertarget{method-CytofkitNormalization-createTableForViolinPlot}{}}}
+\subsection{Method \code{createTableForViolinPlot()}}{
+create a ggplot2 violin plot data.frame
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{CytofkitNormalization$createTableForViolinPlot(clusters, marker)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{clusters}}{numeric a vector of cluster numbers}
+
+\item{\code{marker}}{character, the marker name}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+data.frame ready for call to ggplot
 }
 }
 \if{html}{\out{<hr>}}

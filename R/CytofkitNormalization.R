@@ -80,13 +80,22 @@ CytofkitNormalization = R6Class("CytofkitNormalization",
 
 
         #------------------------------------------------------------
+        #' @description accessor for named list, e.g. list("H3"="Yb176Di<176Yb_H3>")
+        #' @param clusterNumber numeric - must be in range
+        #' @return character list
+        getCluster = function(clusterNumber){
+            stopifnot(clusterNumber %in% unique(as.numeric(private$clusters)))
+            names(private$clusters[private$clusters==clusterNumber])
+            }, # getMarkerShortNames
+
+
+        #------------------------------------------------------------
         #' @description calculate and append a normalized vector column for the specified
         #'   histone marker, regressed against the base ("total") H3 and/or H4 vector
         #' @param target.marker character, a column name from the matrix, e.g., "Sm154Di<154Sm_H3K27me2>"
         #' @param reference.markers character, the marker names for reference ("total") H3 and/or H4
         #' @return character the newly created column name
         normalizeMarker = function(target.marker, reference.markers){
-            printf("--- entering normalizeMarker")
             stopifnot(all(c(target.marker, reference.markers)%in% names(private$markers)))
             columns.requested <- c(target.marker, reference.markers)
             columns.actual <- as.character(lapply(columns.requested,
@@ -100,8 +109,40 @@ CytofkitNormalization = R6Class("CytofkitNormalization",
             new.col.name <- sprintf("%s.regress.%s", target.marker, paste(paste(reference.markers, collapse="+")))
             private$mtx <- cbind(private$mtx, new.col.name=marker.resid)
             colnames(private$mtx)[ncol(private$mtx)] <- new.col.name
+            private$markers[[new.col.name]] <- new.col.name
             new.col.name
-            } # normalizeMarker
+            }, # normalizeMarker
+
+        #------------------------------------------------------------
+        #' @description create a ggplot2 violin plot data.frame
+        #' @param clusters numeric a vector of cluster numbers
+        #' @param marker character, the marker name
+        #' @return data.frame ready for call to ggplot
+        #' @example
+        #' tbl.violin <- createTableForViolinPlot(1:20, "H3")
+        #' ggplot(tbl.violin, aes(x=name, y=value, fill=name)) +
+        #'     geom_violin() +
+        #'     coord_cartesian(ylim=c(-5,5)) +
+        #'     theme(axis.text = element_text(size = 14)) +
+        #      ggtitle("example")
+
+        createTableForViolinPlot = function(clusters, marker){
+           stopifnot(all(clusters %in% as.numeric(private$clusters)))
+           matrix <- self$getMatrix()
+           tbls <- list()
+           for(c in clusters){
+              vec <- self$getMatrix()[, private$markers[[marker]]]
+              cells.in.cluster <- self$getCluster(c)
+              values <- as.numeric(vec[cells.in.cluster])
+              cluster.name <- sprintf("%s.c%d", marker, c)
+              tbl.violin <- data.frame(name=cluster.name, value=values, stringsAsFactors=TRUE)
+              tbls[[cluster.name]] <- tbl.violin
+              } # for c
+           tbl.violin <- do.call(rbind, tbls)
+           rownames(tbl.violin) <- NULL
+           tbl.violin
+           } # createTableForViolinPlot
+
 
        ) # public
 
