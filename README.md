@@ -6,7 +6,7 @@ A simple R6 package which
   - adds new columns to the matrix contained therein, normalizing
     marker values against H3 and/or H4 "total" histone values.
     
-## Reference
+## References
 
 From Alex Kuo's group, this paper applies linear regression
 normalization to cytof data.
@@ -20,7 +20,7 @@ The relevant section:
 src="https://github.com/paul-shannon/cytofkit-extensions/blob/main/docs/H3H4-regression-normalization-method.png" 
 width=800>
 <p>
-This paper, cited by  may be the first to apply regression normalization to
+This paper, cited by Cheung,  may be the first to describe the use of regression normalization to
 cytometry data.
 Knijnenburg, T.A., Roda, O., Wan, Y., Nolan, G.P., Aitchison, J.D. and
 Shmulevich, I., 2011. A regression model approach to enable cell
