@@ -16,7 +16,7 @@ epigenetic variations with aging." Cell 173.6 (2018): 1385-1397.
 DOI: [https://doi.org/10.1016/j.cell.2018.03.079](https://doi.org/10.1016/j.cell.2018.03.079)
 <p>
 The relevant section:
-![Screenshot](docs/docs/H3H4-regression-normalization-method.png)
+![Screenshot](docs/H3H4-regression-normalization-method.png)
 
 <p>
 This paper, cited by  may be the first to apply regression normalization to
