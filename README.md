@@ -17,7 +17,8 @@ DOI: [https://doi.org/10.1016/j.cell.2018.03.079](https://doi.org/10.1016/j.cell
 <p>
 The relevant section:
 ![Screenshot](docs/H3H4-regression-normalization-method.png)
-
+<img
+src="https://github.com/paul-shannon/cytofkit-extensions/blob/main/docs/H3H4-regression-normalization-method.png" width=500>
 <p>
 This paper, cited by  may be the first to apply regression normalization to
 cytometry data.
