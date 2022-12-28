@@ -16,9 +16,9 @@ epigenetic variations with aging." Cell 173.6 (2018): 1385-1397.
 DOI: [https://doi.org/10.1016/j.cell.2018.03.079](https://doi.org/10.1016/j.cell.2018.03.079)
 <p>
 The relevant section:
-![Screenshot](docs/H3H4-regression-normalization-method.png)
 <img
-src="https://github.com/paul-shannon/cytofkit-extensions/blob/main/docs/H3H4-regression-normalization-method.png" width=500>
+src="https://github.com/paul-shannon/cytofkit-extensions/blob/main/docs/H3H4-regression-normalization-method.png" 
+width=800>
 <p>
 This paper, cited by  may be the first to apply regression normalization to
 cytometry data.
