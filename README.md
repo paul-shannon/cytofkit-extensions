@@ -11,8 +11,8 @@ A simple R6 package which
 From Alex Kuo's group, this 2018paper applies linear regression
 normalization to cytof data:
 <p>
-Cheung, Peggie, et al. "Single-cell chromatin modification profiling reveals increased 
-epigenetic variations with aging." Cell 173.6 (2018): 1385-1397. 
+Cheung, Peggie, et al. <i>Single-cell chromatin modification profiling reveals increased 
+epigenetic variations with aging</i>. Cell 173.6 (2018): 1385-1397. 
 <br>
 DOI: [https://doi.org/10.1016/j.cell.2018.03.079](https://doi.org/10.1016/j.cell.2018.03.079)
 <p>
@@ -25,8 +25,8 @@ This 2011 paper, cited by Cheung,  may be the first to describe the use of regre
 (flow) cytometry data:
 <p>
 Knijnenburg, T.A., Roda, O., Wan, Y., Nolan, G.P., Aitchison, J.D. and
-Shmulevich, I., 2011. A regression model approach to enable cell
-morphology correction in high‐throughput flow cytometry. Molecular
+Shmulevich, I., 2011. <i>A regression model approach to enable cell
+morphology correction in high‐throughput flow cytometry</i>. Molecular
 systems biology, 7(1), p.531.
 <br>
 https://www.embopress.org/doi/pdf/10.1038/msb.2011.64
