@@ -16,7 +16,7 @@ epigenetic variations with aging</i>. Cell 173.6 (2018): 1385-1397.
 <br>
 DOI: [https://doi.org/10.1016/j.cell.2018.03.079](https://doi.org/10.1016/j.cell.2018.03.079)
 <p>
-The relevant section of this paper describes their normalization
+The relevant section of this paper describing their normalization
 method, which we re-implement in the
 <b>normalizeMarker</b> method of the <b>CytofkitNormalization</b> class:
 <img
