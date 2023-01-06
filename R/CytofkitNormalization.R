@@ -117,8 +117,10 @@ CytofkitNormalization = R6Class("CytofkitNormalization",
         #' @description create a ggplot2 violin plot data.frame
         #' @param clusters numeric a vector of cluster numbers
         #' @param marker character, the marker name
+        #' @param matrix matrix, a subset of the full matrix, used only if you wish to make violins
+        #'        out of different classes of cells in each cluster see unitTests
         #' @return data.frame ready for call to ggplot
-        #' @example
+        #' @examples
         #' tbl.violin <- createTableForViolinPlot(1:20, "H3")
         #' ggplot(tbl.violin, aes(x=name, y=value, fill=name)) +
         #'     geom_violin() +
@@ -126,12 +128,13 @@ CytofkitNormalization = R6Class("CytofkitNormalization",
         #'     theme(axis.text = element_text(size = 14)) +
         #      ggtitle("example")
 
-        createTableForViolinPlot = function(clusters, marker){
+        createTableForViolinPlot = function(clusters, marker, matrix=NA){
            stopifnot(all(clusters %in% as.numeric(private$clusters)))
-           matrix <- self$getMatrix()
+           if(all(is.na(matrix)))
+              matrix <- self$getMatrix()
            tbls <- list()
            for(c in clusters){
-              vec <- self$getMatrix()[, private$markers[[marker]]]
+              vec <- matrix[, private$markers[[marker]]]
               cells.in.cluster <- self$getCluster(c)
               values <- as.numeric(vec[cells.in.cluster])
               cluster.name <- sprintf("%s.c%d", marker, c)

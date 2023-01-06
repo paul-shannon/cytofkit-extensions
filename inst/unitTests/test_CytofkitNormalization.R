@@ -9,6 +9,7 @@ runTests <- function()
     test_normalizeMarker()
     test_getCluster()
     test_createTableForViolinPlot()
+    test_createTableForViolinPlot_matrixSupplied()
 
 } # runTests
 #----------------------------------------------------------------------------------------------------
@@ -186,7 +187,7 @@ test_createTableForViolinPlot <- function()
     markers <- x$getMarkers()
     clusters <- x$getClusters()
 
-    tbl.violin <- x$createTableForViolinPlot(3, "H3")
+    tbl.violin <- x$createTableForViolinPlot(clusters=3, marker="H3")
     checkEquals(dim(tbl.violin), c(2615, 2))
     if(interactive()){
 
@@ -201,7 +202,7 @@ test_createTableForViolinPlot <- function()
       # second test and plot: H3 in all clusters, 1:20
       #--------------------------------------------------
 
-    tbl.violin <- x$createTableForViolinPlot(1:20, "H3")
+    tbl.violin <- x$createTableForViolinPlot(clusters=1:20, marker="H3")
 
     if(interactive()){
         ggplot(tbl.violin, aes(x=name, y=value, fill=name)) + geom_violin() +
@@ -215,7 +216,7 @@ test_createTableForViolinPlot <- function()
         # third test and plot: H3K4me3 in all clusters, 1:20, no normalization
         #-----------------------------------------------------------------------
 
-    tbl.violin <- x$createTableForViolinPlot(1:20, "H3K4me3")
+    tbl.violin <- x$createTableForViolinPlot(clusters=1:20, marker="H3K4me3")
     checkTrue(sum(fivenum(tbl.violin$value)) > 16)
 
     if(interactive()){
@@ -244,7 +245,7 @@ test_createTableForViolinPlot <- function()
     mtx.extended <- x$getMatrix()
     checkTrue(new.col.name %in% colnames(mtx.extended))
 
-    tbl.violin <- x$createTableForViolinPlot(1:20, new.col.name)
+    tbl.violin <- x$createTableForViolinPlot(clusters=1:20, marker=new.col.name)
     checkTrue(sum(fivenum(tbl.violin$value)) < -2.0)
 
     if(interactive()){
@@ -255,6 +256,101 @@ test_createTableForViolinPlot <- function()
         }
 
 } # test_createTableForViolinPlot
+#----------------------------------------------------------------------------------------------------
+# woratree requests separate violin based on her introduced ("N" vs "Thal") labelled cells
+# to minimize code changes and clutter, my current solution is to simply add an optional
+# matrix argument to x$createTableForViolinPlot(clusters=3, marker="H3", matrix=mtx.low)
+# the returned tbl.violin, from successive calls, rbind together, but DO take care
+# to append, e.g., "N", "Thal", to the name column of the tbl.violin before doing the rbind.
+# all this is demonstrated below.
+test_createTableForViolinPlot_matrixSupplied <- function()
+{
+    message(sprintf("--- test_createTableForViolinPlot_matrixSupplied"))
+
+        #--------------------------------------
+        # first test and plot: H3 in cluster 3
+        #--------------------------------------
+
+    f <- system.file(package="CytofkitNormalization", "extdata", "cytofkit-leukemia.RData")
+    checkTrue(file.exists(f))
+    x <- CytofkitNormalization$new(f)
+
+    x$createSimpleMarkerNames()
+    markers <- x$getMarkers()
+    clusters <- x$getClusters()
+    mtx <- x$getMatrix()
+    low.h3 <- which(mtx[, markers["H3"]] < 2)
+    high.h3 <- which(mtx[, markers["H3"]] >= 2)
+    length(low.h3)   # 34813
+    length(high.h3)  # 63406
+    mtx.low <- mtx[low.h3,]
+    mtx.high <- mtx[high.h3,]
+
+    tbl.violin.low <- x$createTableForViolinPlot(clusters=3, marker="H3", mtx.low)
+    checkEquals(dim(tbl.violin.low), c(2615, 2))
+    if(interactive()){
+        ggplot(tbl.violin.low, aes(x=name, y=value, fill=name)) + geom_violin() +
+               theme(axis.text = element_text(size = 14)) +
+               ggtitle("H3 - cluster 3")
+        } # interactive
+
+    tbl.violin.high <- x$createTableForViolinPlot(clusters=3, marker="H3", mtx.high)
+    checkEquals(dim(tbl.violin.high), c(2615, 2))
+    if(interactive()){
+        ggplot(tbl.violin.high, aes(x=name, y=value, fill=name)) + geom_violin() +
+               theme(axis.text = element_text(size = 14)) +
+               ggtitle("H3 - cluster 3")
+        } # interactive
+
+    tbl.violin.low$name <- paste0(tbl.violin.low$name, ".low")
+    tbl.violin.high$name <- paste0(tbl.violin.high$name, ".high")
+    tbl.violin.both <- rbind(tbl.violin.low, tbl.violin.high)
+    checkEquals(sort(unique(tbl.violin.both$name)), c("H3.c3.high", "H3.c3.low"))
+
+    if(interactive()){
+        ggplot(tbl.violin.both, aes(x=name, y=value, fill=name)) + geom_violin() +
+               theme(axis.text = element_text(size = 14)) +
+               ggtitle("H3 - cluster 3")
+        } # interactive
+
+} # test_createTableForViolinPlot_matrixSupplied
+#----------------------------------------------------------------------------------------------------
+test_reproduce.known.plot <- function()
+{
+   message(sprintf("--- test_reproduce.known.plot"))
+
+   f <- system.file(package="CytofkitNormalization", "extdata", "cytofkit-leukemia.RData")
+   f <- "../extdata/cytofkit-all-abs.RData"
+   checkTrue(file.exists(f))
+   x <- CytofkitNormalization$new(f)
+
+   x$createSimpleMarkerNames()
+   target <- "H3K9Ac"
+   h3.reference <- "H3"
+   new.col.name <- x$normalizeMarker(target, c(h3.reference)) #, h4.reference))
+   checkEquals(new.col.name, "H3K9Ac.regress.H3")
+
+   markers <- x$getMarkers()
+   clusters <- x$getClusters()
+
+       #-----------------------------------------------------------
+       # show clusters 1 and 3, nominated by marjorie, for H3K9Ac
+       # first with raw data, then regression normalized against H3
+       #-----------------------------------------------------------
+
+   tbl.violin.01 <- x$createTableForViolinPlot(clusters=c(1,3), marker=target)
+   tbl.violin.02 <- x$createTableForViolinPlot(clusters=c(1,3), marker=new.col.name)
+   tbl.violin <- rbind(tbl.violin.01, tbl.violin.02)
+
+   if(interactive()){
+       ggplot(tbl.violin, aes(x=name, y=value, fill=name)) + geom_violin() +
+            theme(axis.text = element_text(size = 14)) +
+            ggtitle(sprintf("%s", new.col.name))
+        }
+
+
+
+} # test_reproduce.known.plot
 #----------------------------------------------------------------------------------------------------
 if(!interactive())
     runTests()

@@ -8,6 +8,16 @@ A template for building documented, tested R6 classes
 }
 \examples{
   rt <- R6Template$new(id="abc")
+
+## ------------------------------------------------
+## Method `CytofkitNormalization$createTableForViolinPlot`
+## ------------------------------------------------
+
+tbl.violin <- createTableForViolinPlot(1:20, "H3")
+ggplot(tbl.violin, aes(x=name, y=value, fill=name)) +
+    geom_violin() +
+    coord_cartesian(ylim=c(-5,5)) +
+    theme(axis.text = element_text(size = 14)) +
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
@@ -172,7 +182,7 @@ character the newly created column name
 \subsection{Method \code{createTableForViolinPlot()}}{
 create a ggplot2 violin plot data.frame
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{CytofkitNormalization$createTableForViolinPlot(clusters, marker)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{CytofkitNormalization$createTableForViolinPlot(clusters, marker, matrix = NA)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -181,12 +191,27 @@ create a ggplot2 violin plot data.frame
 \item{\code{clusters}}{numeric a vector of cluster numbers}
 
 \item{\code{marker}}{character, the marker name}
+
+\item{\code{matrix}}{matrix, a subset of the full matrix, used only if you wish to make violins
+out of different classes of cells in each cluster see unitTests}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
 data.frame ready for call to ggplot
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{tbl.violin <- createTableForViolinPlot(1:20, "H3")
+ggplot(tbl.violin, aes(x=name, y=value, fill=name)) +
+    geom_violin() +
+    coord_cartesian(ylim=c(-5,5)) +
+    theme(axis.text = element_text(size = 14)) +
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-CytofkitNormalization-clone"></a>}}
