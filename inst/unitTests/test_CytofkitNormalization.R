@@ -75,10 +75,6 @@ test_normalizeMarker <- function()
     h3.markers <- grep("H3", markers, value=TRUE)
     h4.markers <- grep("H4", markers, value=TRUE)
 
-    target <- markers[["H3K4me3"]]
-    h3.reference <- markers[["H3"]]
-    h4.reference <- markers[["H4"]]
-
     target <- "H3K4me3"
     h3.reference <- "H3"
     h4.reference <- "H4"
