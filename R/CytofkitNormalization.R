@@ -96,17 +96,20 @@ CytofkitNormalization = R6Class("CytofkitNormalization",
         #' @param reference.markers character, the marker names for reference ("total") H3 and/or H4
         #' @return character the newly created column name
         normalizeMarker = function(target.marker, reference.markers){
-            stopifnot(all(c(target.marker, reference.markers)%in% names(private$markers)))
+            if(!target.marker %in% names(private$markers))
+                stop(sprintf("target marker '%s' is not recognized", target.marker))
+            for(reference.marker in reference.markers)
+                if(!reference.marker %in% names(private$markers))
+                    stop(sprintf("reference marker '%s' is not recognized", target.marker))
             columns.requested <- c(target.marker, reference.markers)
             columns.actual <- as.character(lapply(columns.requested,
-                                                   function(shortName) private$markers[[shortName]]))
-
+                                                  function(short.name) private$markers[[short.name]]))
             mtx.2 <- private$mtx[, columns.actual]
             colnames(mtx.2) <- columns.requested
             model <- sprintf("%s ~ 1 + %s", target.marker, paste(reference.markers, collapse=" + "))
             fit <- lm(model, data=as.data.frame(mtx.2))
             marker.resid <- as.numeric(residuals(fit))
-            new.col.name <- sprintf("%s.regress.%s", target.marker, paste(paste(reference.markers, collapse="+")))
+            new.col.name <- sprintf("%s.regress.%s", target.marker, paste(reference.markers, collapse="+"))
             private$mtx <- cbind(private$mtx, new.col.name=marker.resid)
             colnames(private$mtx)[ncol(private$mtx)] <- new.col.name
             private$markers[[new.col.name]] <- new.col.name
