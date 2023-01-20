@@ -45,8 +45,10 @@ dim(mtx.normal); dim(mtx.thal)
 
 tbl.violin.normal <-
   x$createTableForViolinPlot(myClusters, marker=new.col.name, matrix=mtx.normal)
+checkEquals(length(which(is.na(tbl.violin.normal$values))), 0)
 tbl.violin.thal <-
-  x$createTableForViolinPlot(myClusters, marker=new.col.name, matrix=mtx.thal)
+    x$createTableForViolinPlot(myClusters, marker=new.col.name, matrix=mtx.thal)
+checkEquals(length(which(is.na(tbl.violin.thal$values))), 0)
 
 
 tbl.violin.normal$name <- paste0(tbl.violin.normal$name, ".N")

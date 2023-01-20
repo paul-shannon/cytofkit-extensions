@@ -283,7 +283,8 @@ test_createTableForViolinPlot_matrixSupplied <- function()
     mtx.high <- mtx[high.h3,]
 
     tbl.violin.low <- x$createTableForViolinPlot(clusters=3, marker="H3", mtx.low)
-    checkEquals(dim(tbl.violin.low), c(2615, 2))
+    checkEquals(length(which(is.na(tbl.violin.low$value))), 0)
+    checkEquals(dim(tbl.violin.low), c(453, 2))
     if(interactive()){
         ggplot(tbl.violin.low, aes(x=name, y=value, fill=name)) + geom_violin() +
                theme(axis.text = element_text(size = 14)) +
@@ -291,7 +292,8 @@ test_createTableForViolinPlot_matrixSupplied <- function()
         } # interactive
 
     tbl.violin.high <- x$createTableForViolinPlot(clusters=3, marker="H3", mtx.high)
-    checkEquals(dim(tbl.violin.high), c(2615, 2))
+    checkEquals(dim(tbl.violin.high), c(2162, 2))
+    checkEquals(length(which(is.na(tbl.violin.high$value))), 0)
     if(interactive()){
         ggplot(tbl.violin.high, aes(x=name, y=value, fill=name)) + geom_violin() +
                theme(axis.text = element_text(size = 14)) +

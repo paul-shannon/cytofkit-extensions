@@ -139,7 +139,8 @@ CytofkitNormalization = R6Class("CytofkitNormalization",
            for(c in clusters){
               vec <- matrix[, private$markers[[marker]]]
               cells.in.cluster <- self$getCluster(c)
-              values <- as.numeric(vec[cells.in.cluster])
+              cells.in.cluster.in.vector <- intersect(names(vec), cells.in.cluster)
+              values <- as.numeric(vec[cells.in.cluster.in.vector])
               cluster.name <- sprintf("%s.c%d", marker, c)
               tbl.violin <- data.frame(name=cluster.name, value=values, stringsAsFactors=TRUE)
               tbls[[cluster.name]] <- tbl.violin
