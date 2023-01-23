@@ -11,6 +11,8 @@ runTests <- function()
     test_createTableForViolinPlot()
     test_createTableForViolinPlot_matrixSupplied()
 
+    test_calculateColorBoundaries()
+
 } # runTests
 #----------------------------------------------------------------------------------------------------
 test_ctor <- function()
@@ -313,7 +315,132 @@ test_createTableForViolinPlot_matrixSupplied <- function()
 
 } # test_createTableForViolinPlot_matrixSupplied
 #----------------------------------------------------------------------------------------------------
-test_reproduce.known.plot <- function()
+test_calculateColorBoundaries <- function()
+{
+    message(sprintf("--- test_calculateColorBoundaries"))
+
+    f <- system.file(package="CytofkitNormalization", "extdata", "cytofkit-leukemia.RData")
+    checkTrue(file.exists(f))
+    x <- CytofkitNormalization$new(f)
+
+       #------------------------------------------------------------
+       # the simplest case: 10 integers, uniformly distributed,
+       # 2 colors, mode="quantile"
+       #
+       #   start  end color
+       # 1   1.0  5.5 black
+       # 2   5.5 10.0 white
+       #------------------------------------------------------------
+
+    colors <- c("black", "white")
+    vec <- 1:10
+    tbl <- x$calculateColorBoundaries(vec, colors, mode="quantile")
+    checkEquals(dim(tbl), c(2,3))
+    checkEquals(as.list(tbl[1,]), list(start=1, end=5.5, color="black"))
+    checkEquals(as.list(tbl[2,]), list(start=5.5, end=10, color="white"))
+    checkEquals(min(tbl$start), min(vec))
+    checkEquals(max(tbl$end), max(vec))
+
+       #------------------------------------------------------------
+       # normal distribution, 10 numbers, clumped at the mean
+       # 2 colors, mode="quantile"
+       #------------------------------------------------------------
+
+    set.seed(17)
+    vec <- sort(rnorm(n=10, mean=5, sd=2))
+    tbl <- x$calculateColorBoundaries(vec, colors, mode="quantile")
+    checkEquals(dim(tbl), c(2,3))
+      # low half of vector should be black, top half white,
+      # no overlaps, nothing missing
+     black.values <-  vec[vec>=tbl$start[1] & vec < tbl$end[1]]
+     white.values <-  vec[vec>=tbl$start[2] & vec <= tbl$end[2]]
+     checkTrue(all(black.values < 5))
+     checkTrue(all(white.values >= 5))
+
+       #------------------------------------------------------------
+       # normal distribution, 100 numbers, clumped at the mean
+       # 4 colors, mode="quantile", should be +/1 equal number of
+       # numbers for each color
+       #------------------------------------------------------------
+
+    set.seed(31)
+    vec <- sort(rnorm(n=100, mean=50, sd=15))
+    colors <- c("black", "darkgray", "lightgray", "white")
+    tbl <- x$calculateColorBoundaries(vec, colors, mode="quantile")
+
+    black.values <-  vec[vec>=tbl$start[1] & vec < tbl$end[1]]
+    darkGray.values <-  vec[vec>=tbl$start[2] & vec <= tbl$end[2]]
+    lightGray.values <-  vec[vec>=tbl$start[3] & vec <= tbl$end[3]]
+    white.values <-  vec[vec>=tbl$start[4] & vec <= tbl$end[4]]
+
+    checkEqualsNumeric(length(black.values), 25, tol=1)
+    checkEqualsNumeric(length(darkGray.values), 25, tol=1)
+    checkEqualsNumeric(length(lightGray.values), 25, tol=1)
+    checkEqualsNumeric(length(white.values), 25, tol=1)
+         # mode=="quantile" puts an even number of elements into each bin
+         # but bins will be of very different size when the distribution
+         # of the elements is non-uniform.  test that
+    checkEquals(round(with(tbl, end-start)), c(28, 9, 10, 25))
+
+       #------------------------------------------------------------
+       # normal distribution, 100 numbers, clumped at the mean
+       # 4 colors, mode="interval".
+       # with evenly sized bins, the elements-per-bin will vary
+       #------------------------------------------------------------
+    tbl <- x$calculateColorBoundaries(vec, colors, mode="interval")
+    black.values <-  vec[vec>=tbl$start[1] & vec < tbl$end[1]]
+    darkGray.values <-  vec[vec>=tbl$start[2] & vec <= tbl$end[2]]
+    lightGray.values <-  vec[vec>=tbl$start[3] & vec <= tbl$end[3]]
+    white.values <-  vec[vec>=tbl$start[4] & vec <= tbl$end[4]]
+
+       #--------------------------------------------
+       # note: very uneven distribution across bins
+       #--------------------------------------------
+
+    checkEquals(length(black.values), 8)
+    checkEquals(length(darkGray.values), 39)
+    checkEquals(length(lightGray.values), 42)
+    checkEquals(length(white.values), 11)
+
+    checkEquals(min(vec), tbl$start[1])
+    checkEquals(max(vec), tbl$end[nrow(tbl)])
+
+} # test_calculateColorBoundaries
+#----------------------------------------------------------------------------------------------------
+test_createTableForTsnePlot <- function()
+{
+    message(sprintf("--- test_createTableForTsnePlot"))
+
+    f <- system.file(package="CytofkitNormalization", "extdata", "cytofkit-leukemia.RData")
+    checkTrue(file.exists(f))
+    x <- CytofkitNormalization$new(f)
+
+    x$createSimpleMarkerNames()
+    markers <- x$getMarkers()
+
+    mtx <- x$getMatrix()
+    colors <- rev(brewer.pal(11, "Spectral"))
+    tsne.data <- x$createTableForTsnePlot("H3K9Cr", colors, matrix.sub=NA)
+    checkEquals(names(tsne.data), c("color.boundaries", "tbl.tsne"))
+    tbl.tsne <- tsne.data$tbl.tsne
+    checkEquals(colnames(tbl.tsne), c("tsne_1", "tsne_2", "color"))
+    color.boundaries <- tsne.data$color.boundaries
+
+    if(interactive()){
+       par(mar=c(5,5,5,5)) # generous margins
+       with(tbl.plot, plot(tsne_1, tsne_2, col=color, main=full.marker.name,
+                       ylim=c(-50, 50), xlim=c(-50, 50)))
+       legend(40, 15, rev(as.character(round(as.numeric(color.boundaries), digits=2))),
+              rev(colors))
+
+
+
+    }
+
+
+} # test_createTableForTsnePlot
+#----------------------------------------------------------------------------------------------------
+test_test_reproduce.known.plot <- function()
 {
    message(sprintf("--- test_reproduce.known.plot"))
 

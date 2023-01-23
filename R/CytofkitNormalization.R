@@ -148,7 +148,65 @@ CytofkitNormalization = R6Class("CytofkitNormalization",
            tbl.violin <- do.call(rbind, tbls)
            rownames(tbl.violin) <- NULL
            tbl.violin
-           } # createTableForViolinPlot
+           }, # createTableForViolinPlot
+
+        #------------------------------------------------------------
+        #' @description calculates color boundaries for a distribution of numeric values
+        #' @param vector numeric
+        #' @param colors character, a vector of color names, e.g. "#5E4FA2" "#3288BD" ...
+        #' @param mode character either "quantile" or "interval"
+        #' @return data.frame with min, max, color columns
+
+        calculateColorBoundaries = function(vector, colors, mode){
+           stopifnot(mode %in% c("quantile", "interval"))
+           if(mode == "quantile"){
+               # we need one more boundary than there are colors:
+              color.quantiles <- quantile(vector, probs=seq(0, 1, length.out=1+length(colors)))
+              tbl <- data.frame(start=color.quantiles[1:length(colors)],
+                                end=color.quantiles[2:(1+length(colors))],
+                                color=colors)
+              rownames(tbl) <- NULL
+              return(tbl)
+              } # quantile mode
+           if(mode == "interval"){
+              boundaries <- seq(min(vector), max(vector), length.out=(1+length(colors)))
+              tbl <- data.frame(start=boundaries[1:length(colors)],
+                                end=boundaries[2:(1+length(colors))],
+                                color=colors)
+              rownames(tbl) <- NULL
+              return(tbl)
+              } # interval mode
+           }, # calculateColorBoundaries
+
+        #------------------------------------------------------------
+        #' @description create a tsne (x,y,color) data.frame with specified color mapping,
+        #'    for the specified marker
+        #' @param marker character, the (short) marker name
+        #' @param colors character, a vector of color names, e.g. "#5E4FA2" "#3288BD" ...
+        #' @param matrix.sub matrix, an optional subset of the full matrix,
+        #' @return list data.frame (for tsne plotting) and color quantiles (for plot legend)
+        #' @examples
+
+        createTableForTsnePlot = function(marker, colors, matrix.sub=NA){
+           browser()
+           color.quantiles <- quantile(marker.vec, probs=seq(0, 1, length.out=10))
+           stopifnot(marker %in% names(private@markers))
+           marker.longName <- private@markers[[marker]]
+               # the color mapping is always across the full range of the full matrix
+           mtx.full <- self$getMatrix()
+           marker.vec.full <- mtx.full[, marker.longName]
+           marker.color.indices <- rep(NA_real_, length(marker.vec.full))
+           color.quantiles <- quantile(marker.vec.full, probs=seq(0, 1, length.out=length(colors)))
+           marker.color.indices <- rep(NA_real_, length(marker.vec))
+           for(i in seq_len(length(colors))){
+               largerThanThreshold <- which(marker.vec >= color.quantiles[i])
+               marker.color.indices[largerThanThreshold] <- i
+              }
+           table(marker.color.indices)
+           tbl.tsne <- self@getTSNE()
+           tbl.tsne$color <- colors[marker.color.indices]
+           list(tbl.tsne=tbl.tsne, color.quantiles=color.quantiles)
+           } # createTableForTsnePlot
 
 
        ) # public

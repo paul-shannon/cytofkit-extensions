@@ -45,6 +45,8 @@ ggplot(tbl.violin, aes(x=name, y=value, fill=name)) +
 \item \href{#method-CytofkitNormalization-getCluster}{\code{CytofkitNormalization$getCluster()}}
 \item \href{#method-CytofkitNormalization-normalizeMarker}{\code{CytofkitNormalization$normalizeMarker()}}
 \item \href{#method-CytofkitNormalization-createTableForViolinPlot}{\code{CytofkitNormalization$createTableForViolinPlot()}}
+\item \href{#method-CytofkitNormalization-calculateColorBoundaries}{\code{CytofkitNormalization$calculateColorBoundaries()}}
+\item \href{#method-CytofkitNormalization-createTableForTsnePlot}{\code{CytofkitNormalization$createTableForTsnePlot()}}
 \item \href{#method-CytofkitNormalization-clone}{\code{CytofkitNormalization$clone()}}
 }
 }
@@ -212,6 +214,55 @@ ggplot(tbl.violin, aes(x=name, y=value, fill=name)) +
 
 }
 
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-CytofkitNormalization-calculateColorBoundaries"></a>}}
+\if{latex}{\out{\hypertarget{method-CytofkitNormalization-calculateColorBoundaries}{}}}
+\subsection{Method \code{calculateColorBoundaries()}}{
+calculates color boundaries for a distribution of numeric values
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{CytofkitNormalization$calculateColorBoundaries(vector, colors, mode)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{vector}}{numeric}
+
+\item{\code{colors}}{character, a vector of color names, e.g. "#5E4FA2" "#3288BD" ...}
+
+\item{\code{mode}}{character either "quantile" or "interval"}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+data.frame with min, max, color columns
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-CytofkitNormalization-createTableForTsnePlot"></a>}}
+\if{latex}{\out{\hypertarget{method-CytofkitNormalization-createTableForTsnePlot}{}}}
+\subsection{Method \code{createTableForTsnePlot()}}{
+create a tsne (x,y,color) data.frame with specified color mapping,
+   for the specified marker
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{CytofkitNormalization$createTableForTsnePlot(marker, colors, matrix.sub = NA)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{marker}}{character, the (short) marker name}
+
+\item{\code{colors}}{character, a vector of color names, e.g. "#5E4FA2" "#3288BD" ...}
+
+\item{\code{matrix.sub}}{matrix, an optional subset of the full matrix,}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+list data.frame (for tsne plotting) and color quantiles (for plot legend)
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-CytofkitNormalization-clone"></a>}}
