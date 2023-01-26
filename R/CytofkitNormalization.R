@@ -182,33 +182,41 @@ CytofkitNormalization = R6Class("CytofkitNormalization",
         #' @description create a tsne (x,y,color) data.frame with specified color mapping,
         #'    for the specified marker
         #' @param marker character, the (short) marker name
-        #' @param colors character, a vector of color names, e.g. "#5E4FA2" "#3288BD" ...
+        #' @param tbl.colors data.frame with colnames "start", "end", "color"
         #' @param matrix.sub matrix, an optional subset of the full matrix,
-        #' @return list data.frame (for tsne plotting) and color quantiles (for plot legend)
-        #' @examples
+        #' @return data.frame (for tsne plotting)
 
-        createTableForTsnePlot = function(marker, colors, matrix.sub=NA){
-           browser()
-           color.quantiles <- quantile(marker.vec, probs=seq(0, 1, length.out=10))
-           stopifnot(marker %in% names(private@markers))
-           marker.longName <- private@markers[[marker]]
-               # the color mapping is always across the full range of the full matrix
-           mtx.full <- self$getMatrix()
-           marker.vec.full <- mtx.full[, marker.longName]
-           marker.color.indices <- rep(NA_real_, length(marker.vec.full))
-           color.quantiles <- quantile(marker.vec.full, probs=seq(0, 1, length.out=length(colors)))
-           marker.color.indices <- rep(NA_real_, length(marker.vec))
-           for(i in seq_len(length(colors))){
-               largerThanThreshold <- which(marker.vec >= color.quantiles[i])
-               marker.color.indices[largerThanThreshold] <- i
+        createTableForTsnePlot = function(marker, tbl.colors, matrix.sub=NA){
+           stopifnot(marker %in% names(private$markers))
+           marker.longName <- private$markers[[marker]]
+           mtx <- self$getMatrix()
+           if(!all(is.na(matrix.sub)))
+               mtx <- matrix.sub
+           stopifnot(marker.longName %in% colnames(mtx))
+           marker.vec <- mtx[, marker.longName, drop=TRUE]
+           tbl.tsne <- self$getTsne()
+           stopifnot(all(names(marker.vec) %in% rownames(tbl.tsne)))
+           tbl.tsne <- tbl.tsne[names(marker.vec),]
+           tbl.tsne$value <- as.numeric(marker.vec[rownames(tbl.tsne)])
+           color.lookup <- function(value){
+              which(tbl.colors$end >= value)[1]
               }
-           table(marker.color.indices)
-           tbl.tsne <- self@getTSNE()
-           tbl.tsne$color <- colors[marker.color.indices]
-           list(tbl.tsne=tbl.tsne, color.quantiles=color.quantiles)
+           colors.nums <- unlist(lapply(tbl.tsne$value, function(value) color.lookup(value)))
+           tbl.tsne$colorNum <- colors.nums
+           tbl.tsne$color <- tbl.colors$color[tbl.tsne$colorNum]
+           # marker.color.indices <- rep(NA_real_, length(marker.vec.full))
+           # color.quantiles <- quantile(marker.vec.full, probs=seq(0, 1, length.out=length(colors)))
+           # marker.color.indices <- rep(NA_real_, length(marker.vec))
+           # for(i in seq_len(length(colors))){
+           #     largerThanThreshold <- which(marker.vec >= color.quantiles[i])
+           #     marker.color.indices[largerThanThreshold] <- i
+           #    }
+           # table(marker.color.indices)
+           # tbl.tsne <- self$getTSNE()
+           # tbl.tsne$color <- colors[marker.color.indices]
+           # list(tbl.tsne=tbl.tsne, color.quantiles=color.quantiles)
+           invisible(tbl.tsne)
            } # createTableForTsnePlot
-
-
        ) # public
 
     ) # class

@@ -1,8 +1,8 @@
 Package: CytofkitNormalization
 Type: Package
 Title: CytofkitNormalization
-Version: 1.0.8
-Date: 2023-01-23
+Version: 1.0.9
+Date: 2023-01-25
 Author: Paul Shannon
 Maintainer: Paul Shannon<paul.thurmond.shannon@gmail.com>
 Imports:

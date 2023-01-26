@@ -411,32 +411,44 @@ test_createTableForTsnePlot <- function()
 {
     message(sprintf("--- test_createTableForTsnePlot"))
 
-    f <- system.file(package="CytofkitNormalization", "extdata", "cytofkit-leukemia.RData")
+    #cytofkit.results.file <- "cytofkit-leukemia.RData"
+    cytofkit.results.file <- "exp54-NvsThal.RData"
+    f <- system.file(package="CytofkitNormalization", "extdata", cytofkit.results.file)
     checkTrue(file.exists(f))
     x <- CytofkitNormalization$new(f)
 
     x$createSimpleMarkerNames()
     markers <- x$getMarkers()
-
-    mtx <- x$getMatrix()
+    marker <- "H3K9cr"
+    checkTrue(marker %in% names(markers))
+    vec <- x$getMatrix()[, markers[[marker]]]
+    round(fivenum(as.numeric(vec)), digits=3)
+      # -0.007  0.948  1.415  1.846  4.237
+    require(RColorBrewer)
     colors <- rev(brewer.pal(11, "Spectral"))
-    tsne.data <- x$createTableForTsnePlot("H3K9Cr", colors, matrix.sub=NA)
-    checkEquals(names(tsne.data), c("color.boundaries", "tbl.tsne"))
-    tbl.tsne <- tsne.data$tbl.tsne
-    checkEquals(colnames(tbl.tsne), c("tsne_1", "tsne_2", "color"))
-    color.boundaries <- tsne.data$color.boundaries
+     # colors <- c("black", "darkgray", "lightgray", "white")
+    boundary.mode <- "quantile"
+    boundary.mode <- "interval"
+
+    tbl.colors <- x$calculateColorBoundaries(vec, colors, mode=boundary.mode)
+    tbl.tsneWithColors <- x$createTableForTsnePlot("H3K9cr", tbl.colors, matrix.sub=NA)
 
     if(interactive()){
+       quartz(width=10, height=10)
        par(mar=c(5,5,5,5)) # generous margins
-       with(tbl.plot, plot(tsne_1, tsne_2, col=color, main=full.marker.name,
+       #tbl.show <- subset(tbl.tsneWithColors, value > 2.0)
+       tbl.show <- tbl.tsneWithColors
+       with(tbl.show, plot(tsne_1, tsne_2, col=color,
+                           main=sprintf("%s (%s colors) %s", marker, boundary.mode, cytofkit.results.file),
+                           cex=0.4, pch=16,
                        ylim=c(-50, 50), xlim=c(-50, 50)))
-       legend(40, 15, rev(as.character(round(as.numeric(color.boundaries), digits=2))),
-              rev(colors))
 
-
-
-    }
-
+       # starts <- tbl.colors$start[seq_len(nrow(tbl.colors))[-1]]
+       # starts <- c(starts, tail(tbl.colors$end, n=1))
+       # boundaries <- round(tbl.colors$end, digits=2)
+       boundaries <- round(tbl.colors$end, digits=2)
+       legend(35, 40, round(rev(boundaries), digits=3), rev(tbl.colors$color))
+       } # interactive
 
 } # test_createTableForTsnePlot
 #----------------------------------------------------------------------------------------------------

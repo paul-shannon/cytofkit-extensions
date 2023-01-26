@@ -246,7 +246,11 @@ data.frame with min, max, color columns
 create a tsne (x,y,color) data.frame with specified color mapping,
    for the specified marker
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{CytofkitNormalization$createTableForTsnePlot(marker, colors, matrix.sub = NA)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{CytofkitNormalization$createTableForTsnePlot(
+  marker,
+  tbl.colors,
+  matrix.sub = NA
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -254,14 +258,14 @@ create a tsne (x,y,color) data.frame with specified color mapping,
 \describe{
 \item{\code{marker}}{character, the (short) marker name}
 
-\item{\code{colors}}{character, a vector of color names, e.g. "#5E4FA2" "#3288BD" ...}
+\item{\code{tbl.colors}}{data.frame with colnames "start", "end", "color"}
 
 \item{\code{matrix.sub}}{matrix, an optional subset of the full matrix,}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-list data.frame (for tsne plotting) and color quantiles (for plot legend)
+data.frame (for tsne plotting)
 }
 }
 \if{html}{\out{<hr>}}
