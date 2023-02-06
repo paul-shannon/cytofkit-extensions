@@ -177,7 +177,8 @@ test_createTableForViolinPlot <- function()
         # first test and plot: H3 in cluster 3
         #--------------------------------------
 
-    f <- system.file(package="CytofkitNormalization", "extdata", "cytofkit-leukemia.RData")
+    f <- system.file(package="CytofkitNormalization", "extdata",
+                     "cytofkit-leukemia.RData")
     checkTrue(file.exists(f))
     x <- CytofkitNormalization$new(f)
 
@@ -185,15 +186,31 @@ test_createTableForViolinPlot <- function()
     markers <- x$getMarkers()
     clusters <- x$getClusters()
 
-    tbl.violin <- x$createTableForViolinPlot(clusters=3, marker="H3")
-    checkEquals(dim(tbl.violin), c(2615, 2))
-    if(interactive()){
+      # create a tbl from clusters 5, 3, 1 in that order
+      # then use ordered factors on those cluster names to
+      # plot the violins in 1,3,5 order
+    tbl.violin <- x$createTableForViolinPlot(clusters=c(5,3,1), marker="H3")
+    tbl.violin$name <- factor(tbl.violin$name,
+                              levels = c("H3.c1", "H3.c3", "H3.c5"), ordered = TRUE)
 
-        ggplot(tbl.violin, aes(x=name, y=value, fill=name)) + geom_violin() +
-            #coord_cartesian(ylim=c(-5,5)) +
-            theme(axis.text = element_text(size = 14)) +
-            ggtitle("H3 - cluster 3")
+    checkEquals(dim(tbl.violin), c(8081, 2))
+    if(interactive()){
+        p <- ggplot(tbl.violin, aes(x=name, y=value, fill=name)) +
+             geom_violin() +
+             geom_boxplot(width=.1) +
+             theme(axis.text = element_text(size = 14)) +
+             ggtitle("H3 - clusters 5,3,1")
+        p <- p + theme(legend.position="none")
+        p <- p + scale_fill_manual(values=rep("beige",  13))
+        p
+           # by visual inspection: are these ranges displayed, in order,
+           # in the 3 violins?
+        round(range(subset(tbl.violin, name=="H3.c1")$value), digits=2) # 0.32 6.54
+        round(range(subset(tbl.violin, name=="H3.c3")$value), digits=2) # 0.00 6.67
+        round(range(subset(tbl.violin, name=="H3.c5")$value), digits=2) # 0.00 4.71
         } # interactive
+
+
 
 
       #--------------------------------------------------

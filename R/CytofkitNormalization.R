@@ -118,7 +118,7 @@ CytofkitNormalization = R6Class("CytofkitNormalization",
 
         #------------------------------------------------------------
         #' @description create a ggplot2 violin plot data.frame
-        #' @param clusters numeric a vector of cluster numbers
+        #' @param clusters numeric a vector of cluster numbers, in the order you prefer
         #' @param marker character, the marker name
         #' @param matrix matrix, a subset of the full matrix, used only if you wish to make violins
         #'        out of different classes of cells in each cluster see unitTests
@@ -130,7 +130,6 @@ CytofkitNormalization = R6Class("CytofkitNormalization",
         #'     coord_cartesian(ylim=c(-5,5)) +
         #'     theme(axis.text = element_text(size = 14)) +
         #      ggtitle("example")
-
         createTableForViolinPlot = function(clusters, marker, matrix=NA){
            stopifnot(all(clusters %in% as.numeric(private$clusters)))
            if(all(is.na(matrix)))
@@ -142,11 +141,15 @@ CytofkitNormalization = R6Class("CytofkitNormalization",
               cells.in.cluster.in.vector <- intersect(names(vec), cells.in.cluster)
               values <- as.numeric(vec[cells.in.cluster.in.vector])
               cluster.name <- sprintf("%s.c%d", marker, c)
-              tbl.violin <- data.frame(name=cluster.name, value=values, stringsAsFactors=TRUE)
+              tbl.violin <- data.frame(name=cluster.name, value=values, stringsAsFactors=FALSE)
               tbls[[cluster.name]] <- tbl.violin
               } # for c
            tbl.violin <- do.call(rbind, tbls)
            rownames(tbl.violin) <- NULL
+              # set the levels, to keep ggplot2 honest.  explicit level ordering
+              # here, as a parameter to factor(), is apparently required
+           tbl.violin$name <- factor(tbl.violin$name,
+                                     levels=sprintf("%s.c%d", marker, clusters))
            tbl.violin
            }, # createTableForViolinPlot
 

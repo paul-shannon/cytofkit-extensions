@@ -60,13 +60,22 @@ shorter.names <- sub("H3K9me3.regress.H3+H4.", "", long.names, fixed=TRUE)
 
 tbl.violin.both$name <- factor(shorter.names)
 
-ggplot(tbl.violin.both, aes(x=name, y=value, fill=name)) +
-  geom_violin() +
-  theme(axis.text = element_text(size = 14)) +
-  stat_summary(fun=median, geom="point", size=1, color="white") +
-  theme_bw() +
-  ggtitle(sprintf("%s - erythroid trajectory", new.col.name)) +
-  theme_grey(base_size = 18)
+  # the name column is now a factor.  the order of its "levels" controls their order in the plot
+levels(tbl.violin.both$name) <- c("c1.N", "c1.T", "c7.N", "c7.T", "c3.N", "c3.T", "c8.N", "c8.T",
+                                  "c5.N", "c5.T", "c6.N", "c6.T", "c12.N", "c12.T", "c15.N", "c15.T",
+                                  "c14.N", "c14.T", "c16.N", "c16.T", "c13.N", "c13.T", "c17.N", "c17.T",
+                                  "c18.N", "c18.T")
+
+p <- ggplot(tbl.violin.both, aes(x=name, y=value, fill=name)) +
+            geom_violin() +
+            theme(axis.text = element_text(size = 14)) +
+            stat_summary(fun=median, geom="point", size=1, color="white") +
+            theme_bw() +
+            ggtitle(sprintf("%s - erythroid trajectory", new.col.name)) +
+            theme_grey(base_size = 18)
+
+p <- p + scale_fill_manual(values=rep(c("gray", "red"), 13)) + theme(legend.position="none")
+p
 
 # export::graph2ppt(file = "compare groups-H3+H4-normalization-2023-01-10_Woratree.pptx")
 

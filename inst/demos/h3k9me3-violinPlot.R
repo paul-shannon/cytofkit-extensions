@@ -48,14 +48,14 @@ for(cluster in myClusters){
    printf("cluster %d, %d rows, median: %s", cluster, nrow(tbl.cluster), quartiles)
    }
 
-levels(tbl.violin$name)
-new.levels <- as.character(lapply(myClusters,
-                                  function(cluster)
-                                      grep(sprintf("\\.c%d$", cluster),  levels(tbl.violin$name),
-                                           fixed=FALSE, value=TRUE)
-                                  )
-                           )
-levels(tbl.violin$name) <- new.levels
+# levels(tbl.violin$name)
+# new.levels <- as.character(lapply(myClusters,
+#                                   function(cluster)
+#                                       grep(sprintf("\\.c%d$", cluster),  levels(tbl.violin$name),
+#                                            fixed=FALSE, value=TRUE)
+#                                   )
+#                            )
+# levels(tbl.violin$name) <- new.levels
 
 normal.rows <- grep("-N_", rownames(mtx), fixed=TRUE)
 thalassemia.rows <- grep("-Thal_", rownames(mtx), fixed=TRUE)
@@ -69,6 +69,13 @@ tbl.violin.normal <-
   x$createTableForViolinPlot(myClusters, marker=new.col.name, matrix=mtx.normal)
 checkEquals(length(which(is.na(tbl.violin.normal$values))), 0)
 tbl.violin.normal$status <- "NORM"
+checkEquals(as.character(lapply(tbl.violin.normal, class)), c("factor", "numeric", "character"))
+checkEquals(levels(tbl.violin.normal$name),
+   c("H3K9me3.regress.H3+H4.c1", "H3K9me3.regress.H3+H4.c7", "H3K9me3.regress.H3+H4.c3",
+     "H3K9me3.regress.H3+H4.c8", "H3K9me3.regress.H3+H4.c5", "H3K9me3.regress.H3+H4.c6",
+     "H3K9me3.regress.H3+H4.c12", "H3K9me3.regress.H3+H4.c15", "H3K9me3.regress.H3+H4.c14",
+     "H3K9me3.regress.H3+H4.c16", "H3K9me3.regress.H3+H4.c13","H3K9me3.regress.H3+H4.c17",
+     "H3K9me3.regress.H3+H4.c18"))
 
 tbl.violin.thal <-
     x$createTableForViolinPlot(myClusters, marker=new.col.name, matrix=mtx.thal)
@@ -78,52 +85,41 @@ tbl.violin.normal$name <- paste0(tbl.violin.normal$name, ".N")
 tbl.violin.thal$name <- paste0(tbl.violin.thal$name, ".T")
 tbl.violin.thal$status <- "THAL"
 
-for(cluster in myClusters){
-   cluster.sig <- sprintf(".c%d", cluster)
-   tbl.cluster <- subset(tbl.violin.thal, grepl(cluster.sig, tbl.violin.thal$name, fixed=TRUE))
-   printf("thal cluster %d, %d rows, median: %f", cluster, nrow(tbl.cluster), median(tbl.cluster$value))
-   }
-
-for(cluster in myClusters){
-   cluster.sig <- sprintf(".c%d", cluster)
-   tbl.cluster <- subset(tbl.violin.normal, grepl(cluster.sig, tbl.violin.normal$name, fixed=TRUE))
-   printf("normal cluster %d, %d rows, median: %f", cluster, nrow(tbl.cluster), median(tbl.cluster$value))
-   }
-
-
 tbl.violin.both <- rbind(tbl.violin.normal, tbl.violin.thal)
 long.names <- tbl.violin.both$name
+
+   #--------------------------------------------------------
+   # remove the long & redundant prefix: same for all cells
+   #--------------------------------------------------------
+
 shorter.names <- sub("H3K9me3.regress.H3+H4.", "", long.names, fixed=TRUE)
 
-tbl.violin.both$name <- factor(shorter.names)
-tbl.violin.both$status <- as.factor(tbl.violin.both$status)
+   #--------------------------------------------------------
+   # remove Normal Thal N & T: this is now encoded in status
+   #--------------------------------------------------------
+shorter.names <- sub("\\.[NT]$", "", shorter.names)
 
-for(cluster in myClusters){
-   cluster.sig <- sprintf("c%d.", cluster)
-   tbl.cluster <- subset(tbl.violin.both, grepl(cluster.sig, tbl.violin.both$name, fixed=TRUE))
-   printf("both cluster %d, %d rows, median: %f", cluster, nrow(tbl.cluster), median(tbl.cluster$value))
-   }
+   #--------------------------------------------------------
+   # use factors with ordered levels so ggplot will order the
+   # clusters in x properly
+   #--------------------------------------------------------
 
+preferred.order <- c("c1", "c3", "c5", "c6", "c7",
+                     "c8", "c12", "c13", "c14", "c15",
+                     "c16", "c17", "c18")
+tbl.violin.both$name <- factor(shorter.names, levels = preferred.order, ordered = TRUE)
 
-
-  # the name column is now a factor.  the order of its "levels" controls their order in the plot
-levels(tbl.violin.both$name) <- c("c1.N", "c1.T", "c7.N", "c7.T", "c3.N", "c3.T", "c8.N", "c8.T",
-                                  "c5.N", "c5.T", "c6.N", "c6.T", "c12.N", "c12.T", "c15.N", "c15.T",
-                                  "c14.N", "c14.T", "c16.N", "c16.T", "c13.N", "c13.T", "c17.N", "c17.T",
-                                  "c18.N", "c18.T")
-tbl.violin.x <- tbl.violin.both
-tbl.violin.x <- subset(tbl.violin.both, name=="c1.N")
-
-p <- ggplot(tbl.violin.x, aes(x=name, y=value, fill=name)) +
+p <- ggplot(tbl.violin.both,
+            aes(x=name, y=value, fill=status)) +
             geom_violin() +
             theme(axis.text = element_text(size = 14)) +
-            stat_summary(fun=median, geom="point", size=3, color="black") +
+            #stat_summary(fun=median, geom="point", size=3, color="black") +
             theme_bw() +
             ggtitle(sprintf("%s - erythroid trajectory", new.col.name)) +
             theme_grey(base_size = 18)
 
-p <- p + scale_fill_manual(values=rep(c("gray", "red"), 13)) + theme(legend.position="none")
-p
+p <- p + scale_fill_manual(values=c("darkgreen", "red"))
+print(p)
 
-# export::graph2ppt(file = "compare groups-H3+H4-normalization-2023-01-10_Woratree.pptx")
+
 

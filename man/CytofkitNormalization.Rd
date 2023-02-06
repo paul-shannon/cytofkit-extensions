@@ -190,7 +190,7 @@ create a ggplot2 violin plot data.frame
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{clusters}}{numeric a vector of cluster numbers}
+\item{\code{clusters}}{numeric a vector of cluster numbers, in the order you prefer}
 
 \item{\code{marker}}{character, the marker name}
 
