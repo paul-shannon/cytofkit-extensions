@@ -3,11 +3,14 @@ library(CytofkitNormalization)
 
 
 #-----------------------------------------------------------------------------------------------------------------
+# matrix.filter.rownames.string, with our current data, should be either "-N_" or "-Thal_"
 getNormalizedMarkerMediansAcrossClusters <- function (cytofkitNormalizer,
                                                       targetMarker,
                                                       referenceMarkers,
-                                                      clustersOfInterest)
+                                                      clustersOfInterest,
+                                                      matrix.rowname.filter=NA)
 {
+   stopifnot(matrix.rowname.filter %in% c(NA, "-N_", "-Thal_"))
    markers <- cytofkitNormalizer$getMarkers()
    clusters <- cytofkitNormalizer$getClusters()
 
@@ -16,11 +19,14 @@ getNormalizedMarkerMediansAcrossClusters <- function (cytofkitNormalizer,
    normalizedTargetName <- cytofkitNormalizer$normalizeMarker(targetMarker, referenceMarkers)
 
    mtx <- cytofkitNormalizer$getMatrix()[, normalizedTargetName, drop=FALSE]
-   dim(mtx)
+   if(!is.na(matrix.rowname.filter)){
+      filtered.row.names <- grep(matrix.rowname.filter, rownames(mtx), fixed=TRUE)
+      mtx <- mtx[filtered.row.names,,drop=FALSE]
+      }
+
    tbl.violin <- cytofkitNormalizer$createTableForViolinPlot(clustersOfInterest,
                                                              marker=normalizedTargetName,
                                                              matrix=mtx)
-
    medians <- list()
    for(cluster in clustersOfInterest){
       cluster.sig <- sprintf("\\.c%d$", cluster)
@@ -59,12 +65,28 @@ test_getNormalizedMarkerMediansAcrossClusters <- function()
    h3.reference <- "H3"
    h4.reference <- "H4"
    ref.markers <- c(h3.reference, h4.reference)
-
    checkTrue(all(c(target, h3.reference, h4.reference) %in% names(markers)))
-
-   vec.h3k9me3 <- getNormalizedMarkerMediansAcrossClusters(x, target, ref.markers,
-                                                           clustersOfInterest)
+   vec.h3k9me3 <- getNormalizedMarkerMediansAcrossClusters(x, target, ref.markers,clustersOfInterest)
    checkEquals(as.numeric(names(vec.h3k9me3)), clustersOfInterest)
+
+        #---------------------
+        # now H3K9me3 Normal
+        #---------------------
+
+   target <-   "H3K9me3"
+   h3.reference <- "H3"
+   h4.reference <- "H4"
+   ref.markers <- c(h3.reference, h4.reference)
+   checkTrue(all(c(target, h3.reference, h4.reference) %in% names(markers)))
+   vec.h3k9me3.norm <- getNormalizedMarkerMediansAcrossClusters(x, target, ref.markers,clustersOfInterest,
+                                                                matrix.rowname.filter="-N_")
+
+        #---------------------
+        # now H3K9me3 Thal
+        #---------------------
+
+   vec.h3k9me3.thal <- getNormalizedMarkerMediansAcrossClusters(x, target, ref.markers,clustersOfInterest,
+                                                                matrix.rowname.filter="-Thal_")
 
         #-----------------
         # now H3K9ac
@@ -74,11 +96,8 @@ test_getNormalizedMarkerMediansAcrossClusters <- function()
    h3.reference <- "H3"
    h4.reference <- "H4"
    ref.markers <- c(h3.reference, h4.reference)
-
    checkTrue(all(c(target, h3.reference, h4.reference) %in% names(markers)))
-
-   vec.h3k27ac <- getNormalizedMarkerMediansAcrossClusters(x, target, ref.markers,
-                                                           clustersOfInterest)
+   vec.h3k27ac <- getNormalizedMarkerMediansAcrossClusters(x, target, ref.markers,clustersOfInterest)
    checkEquals(as.numeric(names(vec.h3k9me3)), clustersOfInterest)
 
         #-----------------
@@ -91,12 +110,17 @@ test_getNormalizedMarkerMediansAcrossClusters <- function()
         main=title,
         xlab="Cluster", ylab="median expression",
         xaxt="n")
+   lines(as.numeric(vec.h3k9me3.norm), type="b", col="black", pch=16)
+   lines(as.numeric(vec.h3k9me3.thal), type="b", col="red", pch=16)
    lines(as.numeric(vec.h3k27ac), type="b", col="darkgreen", pch=16)
+
    axis(1,
         at=seq_len(length(clustersOfInterest)),
         labels=sprintf("%s", clustersOfInterest),
         col.axis="black", las=0)
-   legend(10, 2, c("H3K9me3", "H3K27ac"), c("blue", "darkgreen"))
+   legend(9, 2,
+          c("H3K9me3 all", "H3K9me3.norm", "H3K9me3.thal", "H3K27ac all"),
+          c("blue", "black", "red", "darkgreen"))
 
 } # test_getNormalizedMarkerMediansAcrossClusters
 #-----------------------------------------------------------------------------------------------------------------
