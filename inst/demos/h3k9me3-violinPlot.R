@@ -118,7 +118,7 @@ p <- ggplot(tbl.violin.both,
             ggtitle(sprintf("%s - erythroid trajectory", new.col.name)) +
             theme_grey(base_size = 18)
 
-p <- p + scale_fill_manual(values=c("darkgreen", "red"))
+p <- p + scale_fill_manual(values=c("#7ACB8D", "#E09AAD"))
 print(p)
 
 
