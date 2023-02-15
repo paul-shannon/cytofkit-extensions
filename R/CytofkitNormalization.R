@@ -80,6 +80,18 @@ CytofkitNormalization = R6Class("CytofkitNormalization",
 
 
         #------------------------------------------------------------
+        #' @description used by client program after adding, e.g., a ratio column
+        #' to the matrix.  markers usually map between short and long names; they
+        #' can be the same, and with new ones added here, they typically are
+        #' @param short.name character e.g. "H3" or "ratio"
+        #' @param long.name character e.g. "Yb176Di<176Yb_H3>" or "ratio"
+        #' @return character list
+        addMarker = function(short.name, long.name){
+            private$markers[[short.name]] <- long.name
+            }, # getMarkerShortNames
+
+
+        #------------------------------------------------------------
         #' @description accessor for named list, e.g. list("H3"="Yb176Di<176Yb_H3>")
         #' @param clusterNumber numeric - must be in range
         #' @return character list

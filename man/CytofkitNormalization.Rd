@@ -42,6 +42,7 @@ ggplot(tbl.violin, aes(x=name, y=value, fill=name)) +
 \item \href{#method-CytofkitNormalization-getClusters}{\code{CytofkitNormalization$getClusters()}}
 \item \href{#method-CytofkitNormalization-createSimpleMarkerNames}{\code{CytofkitNormalization$createSimpleMarkerNames()}}
 \item \href{#method-CytofkitNormalization-getMarkers}{\code{CytofkitNormalization$getMarkers()}}
+\item \href{#method-CytofkitNormalization-addMarker}{\code{CytofkitNormalization$addMarker()}}
 \item \href{#method-CytofkitNormalization-getCluster}{\code{CytofkitNormalization$getCluster()}}
 \item \href{#method-CytofkitNormalization-normalizeMarker}{\code{CytofkitNormalization$normalizeMarker()}}
 \item \href{#method-CytofkitNormalization-createTableForViolinPlot}{\code{CytofkitNormalization$createTableForViolinPlot()}}
@@ -131,6 +132,30 @@ accessor for named list, e.g. list("H3"="Yb176Di<176Yb_H3>")
 \if{html}{\out{<div class="r">}}\preformatted{CytofkitNormalization$getMarkers()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+character list
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-CytofkitNormalization-addMarker"></a>}}
+\if{latex}{\out{\hypertarget{method-CytofkitNormalization-addMarker}{}}}
+\subsection{Method \code{addMarker()}}{
+used by client program after adding, e.g., a ratio column
+to the matrix.  markers usually map between short and long names; they
+can be the same, and with new ones added here, they typically are
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{CytofkitNormalization$addMarker(short.name, long.name)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{short.name}}{character e.g. "H3" or "ratio"}
+
+\item{\code{long.name}}{character e.g. "Yb176Di<176Yb_H3>" or "ratio"}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Returns}{
 character list
 }
