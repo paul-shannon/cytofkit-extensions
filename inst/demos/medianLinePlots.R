@@ -134,7 +134,7 @@ test_getNormalizedMarkerMediansAcrossClusters <- function()
 #   median line plot but the data is the ratio of 2 histone marks of
 #   interest (after normalization). For example the ratio of
 #   H3K9cr/H3K9ac, H3K27cr/H3K27ac.
-test_getMedianRatiosByCluster.h3k9cr.vs.h3k9ac()  <- function()
+test_getMedianRatiosByCluster.h3k9cr.vs.h3k9ac <- function()
 {
    message(sprintf("--- test_getMedianRatiosByCluster.h3k9cr.vs.h3k9ac"))
 
