@@ -1,14 +1,16 @@
-# CytofkitNormalization.R
+# CytofkitNormalization
 
-A simple R6 package which
+An R6 package which
  
   - reads the standard results file produced by cytofkit
   - adds new columns to the matrix contained therein, normalizing
     marker values against H3 and/or H4 "total" histone values.
+  - provides several convenience functions for publication-quality graphics
     
 ## References
 
-From Alex Kuo's group, this 2018paper applies linear regression
+Our normalization strategy is inspired by work Alex Kuo's group,
+described in  this 2018 paper, which applies linear regression
 normalization to cytof data:
 <p>
 Cheung, Peggie, et al. <i>Single-cell chromatin modification profiling reveals increased 
