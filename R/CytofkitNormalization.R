@@ -118,7 +118,10 @@ CytofkitNormalization = R6Class("CytofkitNormalization",
                                                   function(short.name) private$markers[[short.name]]))
             mtx.2 <- private$mtx[, columns.actual]
             colnames(mtx.2) <- columns.requested
-            model <- sprintf("%s ~ 1 + %s", target.marker, paste(reference.markers, collapse=" + "))
+            colnames(mtx.2) <- gsub("-", "_", colnames(mtx.2))
+            target.marker.fixed <- gsub("-", "_", target.marker)
+            reference.markers.fixed <- gsub("-", "_", reference.markers)
+            model <- sprintf("%s ~ 1 + %s", target.marker.fixed, paste(reference.markers.fixed, collapse=" + "))
             fit <- lm(model, data=as.data.frame(mtx.2))
             marker.resid <- as.numeric(residuals(fit))
             new.col.name <- sprintf("%s.regress.%s", target.marker, paste(reference.markers, collapse="+"))

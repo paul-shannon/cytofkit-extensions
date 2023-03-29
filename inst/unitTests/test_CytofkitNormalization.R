@@ -7,6 +7,7 @@ runTests <- function()
     test_ctor()
     test_markerNames()
     test_normalizeMarker()
+    test_normalizeMarker_dashInName()
     test_getCluster()
     test_createTableForViolinPlot()
     test_createTableForViolinPlot_matrixSupplied()
@@ -144,6 +145,50 @@ test_normalizeMarker <- function()
     checkTrue(quick.assay.raw > 16)
 
 } # test_normalizeMarker
+#----------------------------------------------------------------------------------------------------
+test_normalizeMarker_dashInName <- function()
+{
+    message(sprintf("--- test_normalizeMarker_dashInName"))
+
+        # this file has MLL-2 protein, a problem for lm formula
+    f <- system.file(package="CytofkitNormalization", "extdata",
+                     "cytofkit-dashNameExample.RData")
+    checkTrue(file.exists(f))
+    x <- CytofkitNormalization$new(f)
+
+    x$createSimpleMarkerNames()
+    markers <- x$getMarkers()
+
+    h3.markers <- grep("H3", markers, value=TRUE)
+    h4.markers <- grep("H4", markers, value=TRUE)
+
+    target <- "MLL-2"
+    checkTrue(target %in% names(markers))
+    h3.reference <- "H3"
+    h4.reference <- "H4"
+
+        #-----------------------------------
+        # H3 and  H4
+        #-----------------------------------
+
+    new.col.name <- x$normalizeMarker(target, c(h3.reference, h4.reference))
+    checkEquals(new.col.name, "MLL-2.regress.H3+H4")
+
+      # a hasty un-nuanced check is to get the quartiles of
+      # of the distribution before and after normaliaztion,
+      # check their sums.  normalized should approach zero.
+      # raw (unnormalized) should be a largish positive number
+
+    h3h4.normalized.vec <- x$getMatrix()[, new.col.name]
+    quick.assay.normalized <- abs(sum(as.numeric(fivenum(h3h4.normalized.vec))))
+       # -2.19692586 -0.36953319  0.04917722  0.41320936  2.00188338
+    checkTrue(quick.assay.normalized < 0.2)  # 0.1021
+    raw.vec <- x$getMatrix()[, markers[["MLL-2"]]]
+    quick.assay.raw <- sum(as.numeric(fivenum(raw.vec)))
+       #  -0.006413926  3.504356736  3.804160211  4.115765684  5.413913164
+    checkTrue(quick.assay.raw > 9)
+
+} # test_normalizeMarker_dashInName
 #----------------------------------------------------------------------------------------------------
 test_getCluster <- function()
 {
