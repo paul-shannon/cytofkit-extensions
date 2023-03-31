@@ -37,6 +37,7 @@ test_ctor <- function()
 
 } # test_ctor
 #----------------------------------------------------------------------------------------------------
+# give each intricate marker name a standard
 test_markerNames <- function()
 {
     message(sprintf("--- test_markerNames"))
@@ -58,6 +59,50 @@ test_markerNames <- function()
 
     checkEquals(markers[["H3"]], "Yb176Di<176Yb_H3>")
     checkEquals(markers[["H4"]], "Nd142Di<142Nd_H4>")
+
+    checkTrue(length(markers) > 35)
+    checkTrue(length(markers) < 45)
+
+       # we later encountered long marker names with two underscores.
+       # make sure we handle them properly
+
+    f <- system.file(package="CytofkitNormalization", "extdata",
+                     "cytofkit-dashNameExample.RData")
+    checkTrue(file.exists(f))
+    x <- CytofkitNormalization$new(f)
+
+    x$createSimpleMarkerNames()
+
+    markers <- x$getMarkers()
+    h3.markers <- grep("H3", names(markers), v=TRUE)
+    checkEquals(length(h3.markers), 12)
+    h4.markers <- grep("H4", names(markers), value=TRUE)
+    checkEquals(length(h4.markers), 2)
+
+    checkTrue("H3" %in% h3.markers)
+    checkTrue("H4" %in% h4.markers)
+
+    checkEquals(markers[["H3"]], "Yb176Di<176Yb_H3>")
+    checkEquals(markers[["H4"]], "Nd142Di<142Nd_H4>")
+
+
+    checkTrue("c_Myc" %in% names(markers))
+    checkTrue("MLL_Nterm" %in% names(markers))
+    checkEquals(markers[["c_Myc"]], "Dy163Di<163Dy_c_Myc>")
+    checkEquals(markers[["MLL_Nterm"]], "Gd160Di<160Gd_MLL_Nterm>")
+
+    mtx <- x$getMatrix()
+    moi <- c("H3", "H4", "c_Myc", "MLL_Nterm")
+    longNames <- unlist(lapply(moi, function(shortName)  markers[[shortName]]))
+    checkTrue(all(longNames %in% colnames(mtx)))
+
+    moi <- h3.markers
+    longNames <- unlist(lapply(moi, function(shortName)  markers[[shortName]]))
+    checkTrue(all(longNames %in% colnames(mtx)))
+
+    moi <- h4.markers
+    longNames <- unlist(lapply(moi, function(shortName)  markers[[shortName]]))
+    checkTrue(all(longNames %in% colnames(mtx)))
 
     checkTrue(length(markers) > 35)
     checkTrue(length(markers) < 45)
@@ -187,6 +232,27 @@ test_normalizeMarker_dashInName <- function()
     quick.assay.raw <- sum(as.numeric(fivenum(raw.vec)))
        #  -0.006413926  3.504356736  3.804160211  4.115765684  5.413913164
     checkTrue(quick.assay.raw > 9)
+
+       #------------------------------------------------------------
+       # audrey reports problems with  MLL_Nterm and c_myc as well
+       #------------------------------------------------------------
+
+    target <- "MLL-Cterm"
+    checkTrue(target %in% names(markers))
+    h3.reference <- "H3"
+    h4.reference <- "H4"
+
+        #-----------------------------------
+        # H3 and  H4
+        #-----------------------------------
+
+    new.col.name <- x$normalizeMarker(target, c(h3.reference, h4.reference))
+    checkEquals(new.col.name, "MLL-Cterm.regress.H3+H4")
+
+      # a hasty un-nuanced check is to get the quartiles of
+      # of the distribution before and after normaliaztion,
+      # check their sums.  normalized should approach zero.
+      # raw (unnormalized) should be a largish positive number
 
 } # test_normalizeMarker_dashInName
 #----------------------------------------------------------------------------------------------------

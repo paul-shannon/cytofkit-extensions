@@ -64,8 +64,13 @@ CytofkitNormalization = R6Class("CytofkitNormalization",
                    candidates <- candidates[-deleters]
                }
             markers <- candidates
-            tokens <- strsplit(markers, "_")
+               # tokenize by the first underscore in each string
+               # leaving the occasional second underscore intact
+            markers <- sub("_", "::", markers)
+            tokens <- strsplit(markers, "::")
             tokens.2 <- lapply(tokens, "[", 2)
+               # restore the markers, so they match the mtx colnames:
+            markers <- sub("::", "_", markers)
             short.names <- sub(">", "", tokens.2)
             names(markers) <- short.names
             private$markers <- markers
