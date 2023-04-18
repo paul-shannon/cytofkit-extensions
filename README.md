@@ -1,7 +1,5 @@
 # CytofkitNormalization
 
-![alttag](images/h3Normalization.png)
-
 An R6 package which
  
   - reads the standard results file produced by cytofkit
@@ -9,6 +7,9 @@ An R6 package which
     marker values against H3 and/or H4 "total" histone values.
   - provides several convenience functions for publication-quality graphics
     
+## Example:  Histone Modifications (H3Ac and H3Cr) normalized with respect to unmodified H3
+![alttag](images/h3Normalization.png)
+
 ## References
 
 
