@@ -9,6 +9,8 @@ An R6 package which
     
 ## References
 
+![alttag](https://paul-shannon.github.io/igvR/articles/images/ctcfBam-07.png)
+
 Our normalization strategy is inspired by work Alex Kuo's group,
 described in  this 2018 paper, which applies linear regression
 normalization to cytof data:
